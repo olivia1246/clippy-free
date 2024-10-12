@@ -1,5 +1,4 @@
-﻿using Clippy.Core.Classes;
-using OpenAI;
+using Clippy.Core.Classes;
 using OpenAI.Managers;
 using OpenAI.ObjectModels;
 using OpenAI.ObjectModels.RequestModels;
@@ -7,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,60 +13,51 @@ namespace Clippy.Core.Services
 {
     public class ChatGPTService : IChatService
     {
-        private const string ClippyKey = "Hello there! To use this app you need a valid OpenAI API key. You can obtain one by visiting https://beta.openai.com/signup/ and following the instructions to create an account. Once you have an account, you can generate your API key and enter it into the API field in Settings then refreshing this chat dialog!";
         private const string ClippyStart = "Hi! I'm Clippy, your Windows assistant. Would you like to get some assistance?";
         private const string Instruction = "You are in an app that revives Microsoft Clippy in Windows. Speak in a Clippy style and try to stay as concise/short as possible and not output long messages.";
         public ObservableCollection<IMessage> Messages { get; } = new ObservableCollection<IMessage>();
 
         private OpenAIService AI;
-
         private ISettingsService Settings;
-        private IKeyService KeyService;
 
-        public ChatGPTService(ISettingsService settings, IKeyService keys)
+        public ChatGPTService(ISettingsService settings)
         {
             Settings = settings;
-            KeyService = keys;
-            if (SetAPI() || Settings.HasKey) // Refresh API key
-                Add(new ClippyMessage(ClippyStart, true));
+            Add(new ClippyMessage(ClippyStart, true)); // Initialize Clippy start message
+            SetAPI(); // Set up the API
         }
-             
+
         public void Refresh()
         {
             Messages.Clear();
-            if(SetAPI() || Settings.HasKey) // Refresh API key
-                Add(new ClippyMessage(ClippyStart, true));
+            Add(new ClippyMessage(ClippyStart, true)); // Refresh chat and reset start message
         }
 
         public async Task SendAsync(IMessage message) /// Send a message
         {
-            if(!Settings.HasKey)
-            {
-                Add(new ClippyMessage(ClippyKey, false));
-                return;
-            }
             Add(message); // Send user message to UI
             List<ChatMessage> GPTMessages = new List<ChatMessage>
             {
                 ChatMessage.FromSystem(Instruction)
             };
-            foreach (IMessage m in Messages) // Remove any editable message
+            foreach (IMessage m in Messages) // Add previous messages
             {
-                if (message is ClippyMessage)
+                if (m is ClippyMessage)
                     GPTMessages.Add(ChatMessage.FromAssistant(m.Message));
-                else if (message is UserMessage)
+                else if (m is UserMessage)
                     GPTMessages.Add(ChatMessage.FromUser(m.Message));
             }
-            await Task.Delay(300);
+
+            await Task.Delay(300); // Simulate delay
             ClippyMessage Response = new ClippyMessage(true);
-            Add(Response); // Send empty message and update text later to show preview UI
+            Add(Response); // Add an empty message to show a response preview
 
             GPTMessages.Add(ChatMessage.FromUser(message.Message));
 
             var completionResult = await AI.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
             {
                 Messages = GPTMessages,
-                Model = Models.ChatGpt3_5Turbo,
+                Model = Models.ChatGpt3_5Turbo, // Change model as needed
                 MaxTokens = Settings.Tokens,
             });
 
@@ -78,39 +67,30 @@ namespace Clippy.Core.Services
             }
             else
             {
-                Response.Message = $"Unfortunately an error occured `{completionResult.Error.Message}`";
+                Response.Message = $"Unfortunately, an error occurred `{completionResult.Error.Message}`";
                 Response.IsLatest = false;
             }
         }
 
-        private void Add(IMessage Message) /// Add a message
+        private void Add(IMessage Message) /// Add a message to the conversation
         {
-            foreach(IMessage message in Messages) /// Remove any editable message
+            foreach (IMessage message in Messages) // Mark previous messages as non-editable
             {
                 if (message is ClippyMessage)
                     ((ClippyMessage)message).IsLatest = false;
             }
-            Messages.Add(Message);
+            Messages.Add(Message); // Add the new message
         }
 
         /// <summary>
-        /// Initialise the OpenAI API and refresh API key
+        /// Set up the API without requiring an API key
         /// </summary>
-        private bool SetAPI()
+        private void SetAPI()
         {
-            try
+            AI = new OpenAIService(new OpenAiOptions()
             {
-                AI = new OpenAIService(new OpenAiOptions()
-                {
-                    ApiKey = KeyService.GetKey()
-                });
-                return true;
-            }
-            catch
-            {
-                Add(new AnnouncementMessage(ClippyKey));
-                return false;
-            }
+                BaseUrl = "https://powerful-meris-olivia-s-projects-b18b9350.koyeb.app/v1/" // Updated base URL
+            });
         }
     }
 }
