@@ -91,6 +91,9 @@ private void SetAPI()
 {
     AI = new OpenAIService(new OpenAiOptions()
     {
-        BaseUrl = "https://powerful-meris-olivia-s-projects-b18b9350.koyeb.app/v1/" // Updated base URL
+        BaseUrl = "https://powerful-meris-olivia-s-projects-b18b9350.koyeb.app/v1/"
     });
+}
+
+// Ensure this closing brace is for the class
 }
