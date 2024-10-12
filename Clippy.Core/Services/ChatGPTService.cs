@@ -2,45 +2,45 @@ using Clippy.Core.Classes;
 using OpenAI.Managers;
 using OpenAI.ObjectModels;
 using OpenAI.ObjectModels.RequestModels;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Clippy.Core.Services
 {
     public class ChatGPTService : IChatService
     {
+        // Constants and fields
         private const string ClippyStart = "Hi! I'm Clippy, your Windows assistant. Would you like to get some assistance?";
         private const string Instruction = "You are in an app that revives Microsoft Clippy in Windows. Speak in a Clippy style and try to stay as concise/short as possible and not output long messages.";
         public ObservableCollection<IMessage> Messages { get; } = new ObservableCollection<IMessage>();
-
+        
         private OpenAIService AI;
         private ISettingsService Settings;
 
         public ChatGPTService(ISettingsService settings)
         {
             Settings = settings;
-            Add(new ClippyMessage(ClippyStart, true)); // Initialize Clippy start message
-            SetAPI(); // Set up the API
+            Add(new ClippyMessage(ClippyStart, true));
+            SetAPI();
         }
 
         public void Refresh()
         {
             Messages.Clear();
-            Add(new ClippyMessage(ClippyStart, true)); // Refresh chat and reset start message
+            Add(new ClippyMessage(ClippyStart, true));
         }
 
-        public async Task SendAsync(IMessage message) /// Send a message
+        public async Task SendAsync(IMessage message)
         {
-            Add(message); // Send user message to UI
+            Add(message);
+            // Build messages for the GPT
             List<ChatMessage> GPTMessages = new List<ChatMessage>
             {
                 ChatMessage.FromSystem(Instruction)
             };
-            foreach (IMessage m in Messages) // Add previous messages
+
+            foreach (IMessage m in Messages)
             {
                 if (m is ClippyMessage)
                     GPTMessages.Add(ChatMessage.FromAssistant(m.Message));
@@ -48,16 +48,15 @@ namespace Clippy.Core.Services
                     GPTMessages.Add(ChatMessage.FromUser(m.Message));
             }
 
-            await Task.Delay(300); // Simulate delay
+            await Task.Delay(300);
             ClippyMessage Response = new ClippyMessage(true);
-            Add(Response); // Add an empty message to show a response preview
-
+            Add(Response);
             GPTMessages.Add(ChatMessage.FromUser(message.Message));
 
             var completionResult = await AI.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
             {
                 Messages = GPTMessages,
-                Model = Models.ChatGpt3_5Turbo, // Change model as needed
+                Model = Models.ChatGpt3_5Turbo,
                 MaxTokens = Settings.Tokens,
             });
 
@@ -72,28 +71,22 @@ namespace Clippy.Core.Services
             }
         }
 
-        private void Add(IMessage Message) /// Add a message to the conversation
+        private void Add(IMessage Message)
         {
-            foreach (IMessage message in Messages) // Mark previous messages as non-editable
+            foreach (IMessage message in Messages)
             {
                 if (message is ClippyMessage)
                     ((ClippyMessage)message).IsLatest = false;
             }
-            Messages.Add(Message); // Add the new message
+            Messages.Add(Message);
         }
 
-        /// <summary>
-        /// Set up the API without requiring an API key
-        /// </summary>
-        private OpenAIService? AI; // Marking as nullable
-
-private void SetAPI()
-{
-    AI = new OpenAIService(new OpenAiOptions()
-    {
-        BaseUrl = "https://powerful-meris-olivia-s-projects-b18b9350.koyeb.app/v1/"
-    });
-}
-
-// Ensure this closing brace is for the class
+        private void SetAPI()
+        {
+            AI = new OpenAIService(new OpenAiOptions()
+            {
+                BaseUrl = "https://powerful-meris-olivia-s-projects-b18b9350.koyeb.app/v1/"
+            });
+        }
+    }
 }
