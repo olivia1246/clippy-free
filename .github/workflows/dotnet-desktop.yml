@@ -3,10 +3,10 @@ name: Build .NET 6.0 Windows App
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
