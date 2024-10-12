@@ -85,12 +85,12 @@ namespace Clippy.Core.Services
         /// <summary>
         /// Set up the API without requiring an API key
         /// </summary>
-        private void SetAPI()
-        {
-            AI = new OpenAIService(new OpenAiOptions()
-            {
-                BaseUrl = "https://powerful-meris-olivia-s-projects-b18b9350.koyeb.app/v1/" // Updated base URL
-            });
-        }
-    }
+        private OpenAIService? AI; // Marking as nullable
+
+private void SetAPI()
+{
+    AI = new OpenAIService(new OpenAiOptions()
+    {
+        BaseUrl = "https://powerful-meris-olivia-s-projects-b18b9350.koyeb.app/v1/" // Updated base URL
+    });
 }
