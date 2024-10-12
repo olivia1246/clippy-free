@@ -96,21 +96,12 @@ namespace Clippy.Core.Services
         /// <summary>
         /// Initialise the OpenAI API and refresh API key
         /// </summary>
-        private bool SetAPI()
-        {
-            try
-            {
-                AI = new OpenAIService(new OpenAiOptions()
-                {
-                    ApiKey = KeyService.GetKey()
-                });
-                return true;
-            }
-            catch
-            {
-                Add(new AnnouncementMessage(ClippyKey));
-                return false;
-            }
-        }
-    }
+        private OpenAIService? AI; // Marking as nullable
+
+private void SetAPI()
+{
+    AI = new OpenAIService(new OpenAiOptions()
+    {
+        BaseUrl = "https://powerful-meris-olivia-s-projects-b18b9350.koyeb.app/v1/" // Updated base URL
+    });
 }
