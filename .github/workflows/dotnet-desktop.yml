@@ -1,41 +1,36 @@
-name: Build .NET 6.0 Windows App
+name: Build and Deploy
 
 on:
   push:
     branches:
-      - master
-  pull_request:
-    branches:
-      - master
-  workflow_dispatch:  # Allows manual triggering of the workflow
+      - main
+  workflow_dispatch: # Manual trigger option
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3  # Updated to v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '6.0.x'  # Use the latest .NET 6.0 version
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Set up NuGet
+        run: |
+          dotnet nuget add source "https://pkgs.dev.azure.com/dotnet/CommunityToolkit/_packaging/CommunityToolkit-Labs/nuget/v3/index.json" --name CommunityToolkit-Labs
 
-    - name: Build
-      run: dotnet build --configuration Release
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Run Tests
-      run: dotnet test --no-build --verbosity normal
+      - name: Build
+        run: dotnet build --configuration Release
 
-    - name: Publish
-      run: dotnet publish --configuration Release --output ./output
+      - name: Run tests
+        run: dotnet test --configuration Release
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3  # Updated to v3
-      with:
-        name: windows-app-output
-        path: ./output
+      - name: Publish
+        run: dotnet publish -c Release -o output
