@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.22621.0</TargetFramework> <!-- Updated this line -->
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>Clippy</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -22,9 +23,11 @@
     <AppxBundle>Never</AppxBundle>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
+
   <ItemGroup>
     <Content Remove="Assets\Clippy\Clippy.png" />
   </ItemGroup>
+
   <ItemGroup>
     <None Remove="Controls\AnnouncementMessage.xaml" />
     <None Remove="Controls\APIBox.xaml" />
@@ -35,6 +38,7 @@
     <None Remove="NativeMethods.txt" />
     <None Remove="SettingsWindow.xaml" />
   </ItemGroup>
+
   <ItemGroup>
     <AdditionalFiles Include="NativeMethods.txt" />
   </ItemGroup>
@@ -65,16 +69,15 @@
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
-  <!-- Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
-       Tools extension to be activated for this project even if the Windows App SDK Nuget
-       package has not yet been restored -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnablePreviewMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Clippy.Core\Clippy.Core.csproj" />
     <ProjectReference Include="..\CubeKit.UI\CubeKit.UI.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <None Update="Assets\Clippy\Clippy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -101,7 +104,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+
   <ItemGroup>
     <Folder Include="Assets\OOBE\" />
   </ItemGroup>
+
 </Project>
