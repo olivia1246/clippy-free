@@ -3,7 +3,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+<PropertyGroup>
+    <TargetPlatformVersion>10.0.22621.0</TargetPlatformVersion> <!-- Adjust this version as needed -->
+</PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Betalgo.OpenAI" Version="7.0.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
