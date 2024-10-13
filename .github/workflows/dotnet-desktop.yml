@@ -19,9 +19,10 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
-      - name: Set up NuGet
+      - name: Preperation
         run: |
           dotnet nuget add source "https://pkgs.dev.azure.com/dotnet/CommunityToolkit/_packaging/CommunityToolkit-Labs/nuget/v3/index.json" --name CommunityToolkit-Labs
+          dotnet workload install microsoft-windows-sdk-full
 
       - name: Restore dependencies
         run: dotnet restore
