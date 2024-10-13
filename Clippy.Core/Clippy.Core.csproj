@@ -4,6 +4,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 <PropertyGroup>
+    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.22621.0</TargetPlatformVersion> <!-- Adjust this version as needed -->
 </PropertyGroup>
   <ItemGroup>
