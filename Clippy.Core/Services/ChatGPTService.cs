@@ -1,4 +1,5 @@
 using Clippy.Core.Classes;
+using OpenAI;
 using OpenAI.Managers;
 using OpenAI.ObjectModels;
 using OpenAI.ObjectModels.RequestModels;
